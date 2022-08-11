@@ -1,6 +1,7 @@
 ### INICIAR O SERVIDOR
 ```sh
-npm start
+Dentro da pasta Server, executar os comandos:
+npm install
 node app.js
 ``` 
 
