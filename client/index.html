@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    
+    <!-- jQuery, Boostrap e CSS -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css"
+    />
+
+    <link rel="stylesheet" type="text/css" href="index.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+
+    <title>Medilab</title>
+  </head>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script
+    type="text/javascript"
+    src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"
+  ></script>
+  <script
+    type="text/javascript"
+    src="https://cdn.datatables.net/1.10.19/js/dataTables.bootstrap.min.js"
+  ></script>
+
+  <!-- Para o datepicker -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.css"
+    rel="stylesheet"
+  />
+
+  <body>
+    <div class="container">
+      <div class="sideMenu">
+        <nav class="menu" tabindex="0">
+          <header class="avatar">
+            <img src="imgs/avatar.png" />
+            <h4>
+              Bem vindo,
+              <h3>Usuário</h3>
+            </h4>
+            <button type="button" class="btn btn-default btn-sm logoutButton">
+              <span class="glyphicon glyphicon-log-out"></span> Log out
+            </button>
+          </header>
+          <div class="sideFilters">
+            <h2>Filters</h2>
+            <form
+              id="filterForm"
+              onsubmit="event.preventDefault(); getFilters(); reset();"
+            >
+              <input
+                id="idPacienteFilter"
+                name="idPaciente"
+                placeholder="Paciente ID"
+                class="inputFilters"
+              />
+              <input
+                id="nomeFilter"
+                name="nome"
+                placeholder="Nome"
+                class="inputFilters"
+              />
+              <input
+                id="numeroFilter"
+                name="numero"
+                placeholder="Número"
+                class="inputFilters"
+              />
+              <input
+                id="tipoExameFilter"
+                name="tipo"
+                placeholder="Tipo de Exame"
+                class="inputFilters"
+              />
+              <input
+                id="modalidadeFilter"
+                name="modalidade"
+                placeholder="Modalidade"
+                class="inputFilters"
+              />
+              <input
+                id="datepicker"
+                name="datePicker"
+                placeholder="Data do Exame"
+                class="inputFilters"
+              />
+            </form>
+          </div>
+          <button form="filterForm" type="submit" class="filtersButton">
+            <i class="fa fa-search"></i>
+          </button>
+          <img class="medilabLogo" src="imgs/logo-medilab.png" />
+        </nav>
+      </div>
+      <div class="table-responsive padding">
+        <table id="data-table" class="table">
+          <thead class="thead-dark">
+            <tr>
+              <th>ID Paciente</th>
+              <th>Paciente</th>
+              <th>Número</th>
+              <th>Tipo de Exame</th>
+              <th>Modalidade</th>
+              <th>Data</th>
+              <th>Visualização</th>
+            </tr>
+          </thead>
+        </table>
+        <input type="button" onclick="resetFilters()" value="Limpar Filtros" />
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  let table = $("#data-table").DataTable({
+    lengthChange: false,
+    info: false,
+    filter: false,
+    language: {
+      paginate: {
+        previous: "Página anterior",
+        next: "Próxima Página",
+      },
+    },
+    columns: [
+      { data: "patientID" },
+      { data: "nome" },
+      { data: "numero" },
+      { data: "tipoExame" },
+      { data: "modalidade" },
+      { data: "data" },
+      { data: "estado" },
+    ],
+  });
+
+  $(document).ready(function () {
+    $.get("http://localhost:3000/api/users", function (data) {
+      table.clear().rows.add(data).draw();
+    });
+  }); 
+
+  function getFilters() {
+    $.get(
+      "http://localhost:3000/api/users?modalidade=" +
+        $("#modalidadeFilter").val() +
+        "&nome=" +
+        $("#nomeFilter").val() +
+        "&patientID=" +
+        $("#idPacienteFilter").val() +
+        "&numero=" +
+        $("#numeroFilter").val() +
+        "&tipoExame=" +
+        $("#tipoExameFilter").val() +
+        "&data]]=" +
+        $("#datepicker").val(),
+      function (data) {
+        table.clear().rows.add(data).draw();
+      }
+    );
+  }
+
+  function resetFilters() {
+    $.get("http://localhost:3000/api/users", function (data) {
+      table.clear().rows.add(data).draw();
+    });
+  }
+
+  $("#datepicker").datepicker({
+    format: "yyyy-mm-dd",
+  });
+
+</script>
